@@ -1,0 +1,25 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Name="gridbox1" >
+
+
+
+        <Canvas Name="space">
+            <GroupBox Name="textgrid" Height="399" Canvas.Left="20" Canvas.Top="20" Width="761">
+
+            </GroupBox>
+            <Button Name="button" Width="60" Height="22" Canvas.Bottom="20" Canvas.Left="30" HorizontalAlignment="Center" Canvas.Top="398" VerticalAlignment="Top">Skip time</Button>
+            <Button Name="HideText" Width="60" Height="22" Canvas.Bottom="20" Canvas.Left="95" HorizontalAlignment="Left" Canvas.Top="397" VerticalAlignment="Top">Hide text</Button>
+            <TextBox Name="main" Canvas.Left="237" Canvas.Top="164"></TextBox>
+            
+           
+        </Canvas>
+        <ComboBox x:Name="combobox1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Margin="654,23,0,0" VerticalAlignment="Top" Width="120" IsDropDownOpen="True"/>
+    </Grid>
+</Window>
