@@ -1,197 +1,180 @@
-﻿
-using System;
-using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
-using col = System.Drawing.Color;
+﻿using System;
+using Drawing = System.Drawing;
+using Certificates = System.Security.Cryptography.X509Certificates;
 
-namespace SpaceSim
+namespace SpaceSimulation
 {
-    public class SpaceObject
-    {
-        protected String Name { get; set; }
-        protected int OrbitalRadius { get; set; }
-        protected int Size { get; set; }
-        protected String ObjectColor { get; set; }
-        protected int RotationalPeriod { get; set; }
-        protected double Xpos { get; set; }
-        protected double Ypos { get; set; }
-       
 
-        public SpaceObject(String name, int orbitalRadius, int size, String color, int rotationalPeriod)
+    public class CelestialBodyParameters
+    {
+        public string Title { get; set; }
+        public int Orbit { get; set; }
+        public int Dimensions { get; set; }
+        public string Appearance { get; set; }
+        public int Spin { get; set; }
+    }
+
+    public class CelestialBody
+    {
+        protected String EntityName { get; set; }
+        protected int OrbitRadius { get; set; }
+        protected int BodySize { get; set; }
+        protected String BodyColor { get; set; }
+        protected int SpinPeriod { get; set; }
+        protected double CoordX { get; set; }
+        protected double CoordY { get; set; }
+
+        public CelestialBody(CelestialBodyParameters parameters)
         {
-            this.Name = name;
-            this.OrbitalRadius = orbitalRadius;
-            this.Size = size;
-            this.ObjectColor = color;
-            this.RotationalPeriod = rotationalPeriod;
+            this.EntityName = parameters.Title;
+            this.OrbitRadius = parameters.Orbit;
+            this.BodySize = parameters.Dimensions;
+            this.BodyColor = parameters.Appearance;
+            this.SpinPeriod = parameters.Spin;
         }
-        public String getName()
+        public String RetrieveName()
         {
-            return Name;
+            return EntityName;
         }
-        public int getOrbit()
+        public int FetchOrbit()
         {
-            if (OrbitalRadius > 800000) return OrbitalRadius / 7500;
-            if (OrbitalRadius > 500000) return OrbitalRadius / 6000;
-            if (OrbitalRadius < 500 && OrbitalRadius > 1) return 10;
-            return OrbitalRadius / 2000;
+            if (OrbitRadius > 800000) return OrbitRadius / 7500;
+            if (OrbitRadius > 500000) return OrbitRadius / 6000;
+            if (OrbitRadius < 500 && OrbitRadius > 1) return 10;
+            return OrbitRadius / 2000;
         }
-        public double getRadius()
+        public double ObtainRadius()
         {
-            if (Size > 100000) return Size / 25000;
-            if (Size > 10000) return Size / 4500;
-            if (Size < 50) return Size / 3;
-            return Size / 500;
+            if (BodySize > 100000) return BodySize / 25000;
+            if (BodySize > 10000) return BodySize / 4500;
+            if (BodySize < 50) return BodySize / 3;
+            return BodySize / 500;
         }
-        public int getPeriod()
+        public int AcquirePeriod()
         {
-            return RotationalPeriod;
+            return SpinPeriod;
         }
-        public virtual void Draw()
+        public virtual void Show()
         {
-            Console.WriteLine(Name);
+            Console.WriteLine(EntityName);
         }
-        //public double XPos(double timeTick, double offset)
-        //{
-        //    Xpos = offset - (getRadius() / 2) + getOrbit() * Math.Cos(timeTick * 1000 / RotationalPeriod);
-        //    return Xpos;
-        //}
-        public double XPos()
+
+        public double GetXPos()
         {
-            return Xpos;
+            return CoordX;
         }
-        public double XPos(double timeTick, double centerX)
+        public double GetXPos(double tick, double centerX)
         {
-            if (getOrbit() == 0) // If the space object is the Sun
+            if (FetchOrbit() == 0)
             {
-                Xpos = centerX - (getRadius() / 2);
+                CoordX = centerX - (ObtainRadius() / 2);
             }
             else
             {
-                Xpos = centerX - (getRadius() / 2) + getOrbit() * Math.Cos(timeTick * 1000 / RotationalPeriod);
+                CoordX = centerX - (ObtainRadius() / 2) + FetchOrbit() * Math.Cos(tick * 1000 / SpinPeriod);
             }
-            return Xpos;
+            return CoordX;
         }
 
-        public double YPos(double timeTick, double centerY)
+        public double GetYPos(double tick, double centerY)
         {
-            if (getOrbit() == 0) // If the space object is the Sun
+            if (FetchOrbit() == 0)
             {
-                Ypos = centerY - (getRadius() / 2);
+                CoordY = centerY - (ObtainRadius() / 2);
             }
             else
             {
-                Ypos = centerY - (getRadius() / 2) + getOrbit() * Math.Sin(timeTick * 1000 / RotationalPeriod);
+                CoordY = centerY - (ObtainRadius() / 2) + FetchOrbit() * Math.Sin(tick * 1000 / SpinPeriod);
             }
-            return Ypos;
+            return CoordY;
         }
-        public double YPos()
+        public double GetYPos()
         {
-            return Ypos;
-        }
-
-
-        /*public double XPos()
-        {
-            return Xpos;
-        }
-        public double YPos(double timeTick, double offset)
-        {
-
-            Ypos = offset - (getRadius() / 2) + getOrbit() * Math.Sin(timeTick * 1000 / RotationalPeriod);
-            return Ypos;
-        }
-        public double YPos()
-        {
-            return Ypos;
-        }*/
-        public String getColor()
-        {
-            return ObjectColor;
+            return CoordY;
         }
 
+        public String GetColor()
+        {
+            return BodyColor;
+        }
     }
 
-    public class Star : SpaceObject
+    public class Star : CelestialBody
     {
-        public Star(String name, int orbitalRadius, int size, String color, int rotationalPeriod) : base(name, orbitalRadius, size, color, rotationalPeriod) { }
-        public override void Draw()
+        public Star(CelestialBodyParameters parameters) : base(parameters) { }
+        public override void Show()
         {
-            Console.Write("Star : ");
-            base.Draw();
+            Console.Write("Star: ");
+            base.Show();
         }
     }
 
-    public class Planet : SpaceObject
+    public class Planet : CelestialBody
     {
         public Moon[] moons { get; set; }
-        public Planet(String name, int orbitalRadius, int size, String color, int rotationalPeriod) : base(name, orbitalRadius, size, color, rotationalPeriod) { }
-        public override void Draw()
+        public Planet(CelestialBodyParameters parameters) : base(parameters) { }
+        public override void Show()
         {
             Console.Write("Planet: ");
-            base.Draw();
+            base.Show();
         }
     }
 
     public class Moon : Planet
     {
-        protected SpaceObject Orbits { get; set; }
-        public Moon(String name, int orbitalRadius, int size, String color, int rotationalPeriod, SpaceObject orbits) : base(name, orbitalRadius, size, color, rotationalPeriod)
-        {
-            this.Orbits = orbits;
+        protected CelestialBody Orbiting { get; set; }
+        public Moon(CelestialBodyParameters parameters, CelestialBody orbit) : base(parameters) {
+            this.Orbiting = orbit;
         }
-        public override void Draw()
+        public override void Show()
         {
             Console.Write("Moon: ");
-            base.Draw();
+            base.Show();
         }
-        public SpaceObject getOrbits()
+        public CelestialBody GetOrbiting()
         {
-            return Orbits;
+            return Orbiting;
         }
     }
 
-    public class Astroid : SpaceObject
+    public class Astroid : CelestialBody
     {
-        public Astroid(String name, int orbitalRadius, int size, String color, int rotationalPeriod) : base(name, orbitalRadius, size, color, rotationalPeriod) { }
-        public override void Draw()
+        public Astroid(CelestialBodyParameters parameters) : base(parameters) { }
+        public override void Show()
         {
             Console.Write("Astroid: ");
-            base.Draw();
+            base.Show();
         }
     }
 
-    public class AstroidBelt : SpaceObject
+    public class AstroidBelt : CelestialBody
     {
-        public AstroidBelt(String name, int orbitalRadius, int size, String color, int rotationalPeriod) : base(name, orbitalRadius, size, color, rotationalPeriod) { }
-        public override void Draw()
+        public AstroidBelt(CelestialBodyParameters parameters) : base(parameters) { }
+        public override void Show()
         {
             Console.Write("Astroid belt: ");
-            base.Draw();
+            base.Show();
         }
     }
 
-    public class DwarfPlanet : SpaceObject
+    public class DwarfPlanet : CelestialBody
     {
-        public DwarfPlanet(String name, int orbitalRadius, int size, String color, int rotationalPeriod) : base(name, orbitalRadius, size, color, rotationalPeriod) { }
-        public override void Draw()
+        public DwarfPlanet(CelestialBodyParameters parameters) : base(parameters) { }
+        public override void Show()
         {
             Console.Write("Dwarf Planet: ");
-            base.Draw();
+            base.Show();
         }
     }
 
-    public class Comet : SpaceObject
+    public class Comet : CelestialBody
     {
-        public Comet(String name, int orbitalRadius, int size, String color, int rotationalPeriod) : base(name, orbitalRadius, size, color, rotationalPeriod) { }
-        public override void Draw()
+        public Comet(CelestialBodyParameters parameters) : base(parameters) { }
+        public override void Show()
         {
             Console.Write("Comet: ");
-            base.Draw();
+            base.Show();
         }
     }
-
 }
-
-
 
