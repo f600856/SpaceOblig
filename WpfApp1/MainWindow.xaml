@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid Name="gridbox1" >
+    <Grid Name="gridbox1" MouseDown="Mouse_click" >
 
 
 
-        <Canvas Name="space">
+        <Canvas Name="DisplayCanvas" >
             <GroupBox Name="textgrid" Height="399" Canvas.Left="20" Canvas.Top="20" Width="761">
 
             </GroupBox>

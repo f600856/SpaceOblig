@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Properties {
     class Program {
-        static void Main() {
+        static void Mains() {
 
             // Standard traditional syntax
             Body sun = new Body("Sol");
@@ -25,7 +25,7 @@ namespace Properties {
 
 
 
-            Body mercury = new Body("Mercury") { Period = 88, Radius = 57900000 };
+            Body mercury = new Body("Mercury") { Period = 88, Radius = 57910 };
             sun[0] = mercury;
 
 

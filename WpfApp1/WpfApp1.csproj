@@ -9,8 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\1 - Space Object\1 - SpaceObjectLibraries.csproj" />
-    <ProjectReference Include="..\2 - Space Sim\2 - Space Sim.csproj" />
-    <ProjectReference Include="..\3 - Properties\3 - Properties.csproj" />
   </ItemGroup>
 
 </Project>
