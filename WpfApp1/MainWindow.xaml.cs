@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,20 +13,21 @@ namespace WpfApp1
 {
     public partial class MainWindow : Window
     {
-        double YCenter = 0;
-        double XCenter = 0;
-        bool zoom = false;
-        double zoomView = 1;
-        double xZoom = 0;
-        double yZoom = 0;
-        double vinkel = 0;
+        double centerY = 0;
+        double centerX = 0;
+        bool magnify = false;
+        double magnification = 1;
+        double xMagnify = 0;
+        double yMagnify = 0;
+        double angle = 0;
 
+        // Initialize solar system with celestial bodies
         List<CelestialBody> solarSystem = new List<CelestialBody>
         {
             new Star(new CelestialBodyParameters { Title = "Sun", Orbit = 0, Dimensions = 695000, Appearance = "Yellow", Spin = 1 }),
-            new Planet(new CelestialBodyParameters { Title = "Mercury", Orbit = 57910, Dimensions = 2440, Appearance = "Blue", Spin = 88 }),
+            new Planet(new CelestialBodyParameters { Title = "Mercury", Orbit = 57910, Dimensions = 2440, Appearance = "Gray", Spin = 88 }),
             new Planet(new CelestialBodyParameters { Title = "Venus", Orbit = 108200, Dimensions = 6052, Appearance = "Tan", Spin = 225 }),
-            new Planet(new CelestialBodyParameters { Title = "Earth", Orbit = 149600, Dimensions = 6368, Appearance = "Purple", Spin = 365 }),
+            new Planet(new CelestialBodyParameters { Title = "Earth", Orbit = 149600, Dimensions = 6368, Appearance = "Blue", Spin = 365 }),
             new Planet(new CelestialBodyParameters { Title = "Mars", Orbit = 227940, Dimensions = 3390, Appearance = "Red", Spin = 687 }),
             new Planet(new CelestialBodyParameters { Title = "Jupiter", Orbit = 778330, Dimensions = 69173, Appearance = "Pink", Spin = 4333 }),
             new Planet(new CelestialBodyParameters { Title = "Saturn", Orbit = 1429400, Dimensions = 57316, Appearance = "Tan", Spin = 10760 }),
@@ -35,13 +35,11 @@ namespace WpfApp1
             new Planet(new CelestialBodyParameters { Title = "Neptune", Orbit = 4504300, Dimensions = 24553, Appearance = "Blue", Spin = 60190 }),
             new DwarfPlanet(new CelestialBodyParameters { Title = "Pluto", Orbit = 5913520, Dimensions = 1184, Appearance = "Tan", Spin = 90550 })
         };
-
-
         public MainWindow()
-         {
+        {
             InitializeComponent();
             Planet earth = (Planet)solarSystem[3];
-            solarSystem.Add(new Moon(new CelestialBodyParameters { Title = "The Moon", Orbit = 384, Dimensions = 1738, Appearance = "Gray", Spin = 27}, earth));
+            solarSystem.Add(new Moon(new CelestialBodyParameters { Title = "The Moon", Orbit = 384, Dimensions = 1738, Appearance = "Gray", Spin = 27 }, earth));
             Planet mars = (Planet)solarSystem[4];
             solarSystem.Add(new Moon(new CelestialBodyParameters { Title = "Phobos", Orbit = 23, Dimensions = 11, Appearance = "Red", Spin = 1 }, mars));
             solarSystem.Add(new Moon(new CelestialBodyParameters { Title = "Deimos", Orbit = 9, Dimensions = 6, Appearance = "Gray", Spin = 2 }, mars));
@@ -49,45 +47,38 @@ namespace WpfApp1
             solarSystem.Add(new Moon(new CelestialBodyParameters { Title = "Ananke", Orbit = 21200, Dimensions = 15, Appearance = "Pink", Spin = -631 }, jupiter));
 
 
-            System.Timers.Timer timer = new System.Timers.Timer(40);
-             timer.Elapsed += Timer_Elapsed;
-             timer.Start();
+            System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Tick += Timer_Tick;
+            timer.Interval = TimeSpan.FromMilliseconds(40);
+            timer.Start();
 
-             XCenter = DisplayCanvas.ActualWidth / 2;
-             YCenter = DisplayCanvas.ActualHeight / 2;
-         }
-        
-        
-        private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+
+            centerX = DisplayCanvas.ActualWidth / 2;
+            centerY = DisplayCanvas.ActualHeight / 2;
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            angle += 0.5 / 360.0;
+            RenderCelestialBodies();
+        }
+
+
+        // Timer elapsed event to update the solar system display
+        private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             try
             {
-                Dispatcher.Invoke(new Action(() => { DrawPlanets(); }));
-                vinkel += 0.5 / 360.0;
+                Dispatcher.Invoke(new Action(() => { RenderCelestialBodies(); }));
+                angle += 0.5 / 360.0;
             }
             catch
             {
-
-
             }
         }
 
-            private void DrawOrbit(double centerX, double centerY, double orbitRadiusX, double orbitRadiusY)
-            {
-                Ellipse orbitEllipse = new Ellipse
-                {
-                    Width = orbitRadiusX * 2,
-                    Height = orbitRadiusY * 2,
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1,
-                };
-
-                DisplayCanvas.Children.Add(orbitEllipse);
-                Canvas.SetLeft(orbitEllipse, centerX - orbitRadiusX);
-                Canvas.SetTop(orbitEllipse, centerY - orbitRadiusY);
-            }
-
-        private void DrawOrbitalRing(double centerX, double centerY, double orbitRadiusX, double orbitRadiusY)
+        // Render an orbit ellipse for a celestial body
+        private void RenderOrbit(double centerX, double centerY, double orbitRadiusX, double orbitRadiusY)
         {
             Ellipse orbitEllipse = new Ellipse
             {
@@ -102,10 +93,8 @@ namespace WpfApp1
             Canvas.SetTop(orbitEllipse, centerY - orbitRadiusY);
         }
 
-      
-
-
-        private void DrawPlanets()
+        // Render all celestial bodies and their orbits in the solar system
+        private void RenderCelestialBodies()
         {
             DisplayCanvas.Children.Clear();
             double canvasCenterX = DisplayCanvas.ActualWidth / 2;
@@ -113,81 +102,82 @@ namespace WpfApp1
 
             foreach (CelestialBody spaceObject in solarSystem)
             {
-                double Xpos;
-                double Ypos;
+                double xPos;
+                double yPos;
                 if (spaceObject.GetType() == typeof(Moon))
                 {
-                    Moon luna = (Moon)spaceObject;
-                    double XoffsetPos = luna.GetOrbiting().GetXPos(vinkel, XCenter) + luna.GetOrbiting().ObtainRadius() / 2;
-                    double YoffsetPos = luna.GetOrbiting().GetYPos(vinkel, YCenter) + luna.GetOrbiting().ObtainRadius() / 2;
-                    Xpos = luna.GetXPos(vinkel, XoffsetPos);
-                    Ypos = luna.GetYPos(vinkel, YoffsetPos);
+                    Moon moon = (Moon)spaceObject;
+                    double xOffsetPos = moon.GetOrbiting().GetXPos(angle, centerX) + moon.GetOrbiting().ObtainRadius() / 2;
+                    double yOffsetPos = moon.GetOrbiting().GetYPos(angle, centerY) + moon.GetOrbiting().ObtainRadius() / 2;
+                    xPos = moon.GetXPos(angle, xOffsetPos);
+                    yPos = moon.GetYPos(angle, yOffsetPos);
                 }
                 else
                 {
-                    Xpos = spaceObject.GetXPos(vinkel, XCenter);
-                    Ypos = spaceObject.GetYPos(vinkel, YCenter);
+                    xPos = spaceObject.GetXPos(angle, centerX);
+                    yPos = spaceObject.GetYPos(angle, centerY);
                 }
-                Xpos *= zoomView;
-                Ypos *= zoomView;
+                xPos *= magnification;
+                yPos *= magnification;
 
                 // Add canvas center coordinates to the calculated positions
-                Xpos += canvasCenterX;
-                Ypos += canvasCenterY;
+                xPos += canvasCenterX;
+                yPos += canvasCenterY;
 
-                drawObject(spaceObject, Xpos, Ypos);
+                RenderObject(spaceObject, xPos, yPos, canvasCenterX, canvasCenterY);
             }
+
         }
-        
 
-
-        private void drawObject(CelestialBody spaceobject, double x, double y)
+        // Render a celestial object on the canvas
+        private void RenderObject(CelestialBody spaceObject, double x, double y, double canvasCenterX, double canvasCenterY)
         {
-            Ellipse ellipse = DrawEllipse(spaceobject.ObtainRadius(), spaceobject.ObtainRadius(), spaceobject.GetColor());
+            Ellipse ellipse = CreateEllipse(spaceObject.ObtainRadius(), spaceObject.ObtainRadius(), spaceObject.GetColor());
             DisplayCanvas.Children.Add(ellipse);
-            Canvas.SetLeft(ellipse, x);
-            Canvas.SetTop(ellipse, y);
-        }
-        public Ellipse DrawEllipse(double height, double width, String colorName)
-        {
-            col color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(colorName);
-            SolidColorBrush fillBrush = new SolidColorBrush() { Color = color };
-            Ellipse el = new Ellipse()
+            Canvas.SetLeft(ellipse, x - spaceObject.ObtainRadius() / 2);
+            Canvas.SetTop(ellipse, y - spaceObject.ObtainRadius() / 2);
+
+            // Render orbits for planets only
+            if (spaceObject.GetType() == typeof(Planet))
             {
-                Height = height,
+                double orbitRadius = spaceObject.FetchOrbit() * magnification;
+                RenderOrbit(canvasCenterX, canvasCenterY, orbitRadius, orbitRadius);
+            }
+        }
+
+
+
+        // Create an ellipse with the specified dimensions and color
+        private Ellipse CreateEllipse(double width, double height, String colorName)
+        {
+            Color color = (Color)ColorConverter.ConvertFromString(colorName);
+            SolidColorBrush fillBrush = new SolidColorBrush(color);
+            return new Ellipse
+            {
                 Width = width,
-                Fill = fillBrush
+                Height = height,
+                Fill = fillBrush,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1,
             };
-            return el;
         }
-        private void Mouse_click(object sender, MouseEventArgs e)
+
+        // Mouse wheel event to zoom in and out
+        private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.Key == Key.Up)
             {
-                zoom = true;
-                zoomView *= 1.5;
+                magnification *= 1.1;
             }
-            else if (e.RightButton == MouseButtonState.Pressed)
+            else if (e.Key == Key.Down)
             {
-                if (zoom) zoomView /= 1.5;
-                zoom = false;
+                magnification /= 1.1;
             }
-            System.Windows.Point mousePointer = e.GetPosition(DisplayCanvas);
-            xZoom = mousePointer.X;
-            yZoom = mousePointer.Y;
+
+            // Clamp zoomView to reasonable limits
+            magnification = Math.Clamp(magnification, 0.1, 10);
+            RenderCelestialBodies();
         }
-        private void Window_SizeChanged(object sender, EventArgs e)
-        {
-            YCenter = DisplayCanvas.ActualHeight / 2;
-            XCenter = DisplayCanvas.ActualWidth / 2;
-        }
-        private void Canvas_Loaded(object sender, RoutedEventArgs e)
-        {
-            //Canvas.InvalidateVisual();  
-        }
+
     }
 }
-
-
-
-

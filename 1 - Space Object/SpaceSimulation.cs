@@ -67,11 +67,11 @@ namespace SpaceSimulation
         {
             if (FetchOrbit() == 0)
             {
-                CoordX = centerX - (ObtainRadius() / 2);
+                CoordX = centerX;
             }
             else
             {
-                CoordX = centerX - (ObtainRadius() / 2) + FetchOrbit() * Math.Cos(tick * 1000 / SpinPeriod);
+                CoordX = centerX + FetchOrbit() * Math.Cos(tick * 1000 / SpinPeriod);
             }
             return CoordX;
         }
@@ -80,14 +80,15 @@ namespace SpaceSimulation
         {
             if (FetchOrbit() == 0)
             {
-                CoordY = centerY - (ObtainRadius() / 2);
+                CoordY = centerY;
             }
             else
             {
-                CoordY = centerY - (ObtainRadius() / 2) + FetchOrbit() * Math.Sin(tick * 1000 / SpinPeriod);
+                CoordY = centerY + FetchOrbit() * Math.Sin(tick * 1000 / SpinPeriod);
             }
             return CoordY;
         }
+
         public double GetYPos()
         {
             return CoordY;

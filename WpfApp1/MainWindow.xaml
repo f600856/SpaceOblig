@@ -5,11 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Name="gridbox1" MouseDown="Mouse_click" >
-
-
-
+        Title="MainWindow" Height="450" Width="800"
+        KeyUp="Window_KeyUp">
+    <Grid Name="gridbox1">
         <Canvas Name="DisplayCanvas" >
             <GroupBox Name="textgrid" Height="399" Canvas.Left="20" Canvas.Top="20" Width="761">
 
@@ -17,8 +15,8 @@
             <Button Name="button" Width="60" Height="22" Canvas.Bottom="20" Canvas.Left="30" HorizontalAlignment="Center" Canvas.Top="398" VerticalAlignment="Top">Skip time</Button>
             <Button Name="HideText" Width="60" Height="22" Canvas.Bottom="20" Canvas.Left="95" HorizontalAlignment="Left" Canvas.Top="397" VerticalAlignment="Top">Hide text</Button>
             <TextBox Name="main" Canvas.Left="237" Canvas.Top="164"></TextBox>
-            
-           
+
+
         </Canvas>
         <ComboBox x:Name="combobox1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Margin="654,23,0,0" VerticalAlignment="Top" Width="120" IsDropDownOpen="True"/>
     </Grid>
